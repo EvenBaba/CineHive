@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cinehive.dataclasses.Movie
 import com.example.cinehive.R
 
-class MovieListAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
+class MovieListAdapter() : RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
+    private val movies = mutableListOf<Movie>()
 
     class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -35,4 +36,10 @@ class MovieListAdapter(private val movies: List<Movie>) : RecyclerView.Adapter<M
     }
 
     override fun getItemCount(): Int = movies.size
+
+    fun updateMovies(newMovies: List<Movie>) {
+        movies.clear()
+        movies.addAll(newMovies)
+        notifyDataSetChanged()
+    }
 }
