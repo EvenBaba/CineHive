@@ -1,45 +1,36 @@
 package com.example.cinehive.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cinehive.dataclasses.Movie
-import com.example.cinehive.R
+import com.example.cinehive.databinding.MovieListItemBinding
 
-class MovieListAdapter() : RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
-    private val movies = mutableListOf<Movie>()
+class MovieListAdapter(private var movies: List<Movie> = emptyList()) :
+    RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
-    class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        private lateinit var movie: Movie
-
-        val movieName: TextView = view.findViewById(R.id.rvi_movie_name)
-
+    class MovieViewHolder(private val binding: MovieListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie) {
-            this.movie = movie
-
-            movieName.text = movie.name
+            binding.movie = movie
+            binding.executePendingBindings()
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.movie_list_item, parent, false)
-        return MovieViewHolder(view)
+        val binding = MovieListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MovieViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val movie = movies[position]
-        holder.bind(movie)
+        holder.bind(movies[position])
     }
 
-    override fun getItemCount(): Int = movies.size
+    override fun getItemCount(): Int {
+        return movies.size
+    }
 
     fun updateMovies(newMovies: List<Movie>) {
-        movies.clear()
-        movies.addAll(newMovies)
+        this.movies = newMovies
         notifyDataSetChanged()
     }
 }
