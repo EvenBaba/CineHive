@@ -1,7 +1,6 @@
 package com.example.cinehive
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +18,8 @@ class MoviesFragment : Fragment() {
     private lateinit var movieAdapter: MovieAdapter
     private lateinit var recyclerView: RecyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private var isLoading = false
+    private var currentPage = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,9 +35,29 @@ class MoviesFragment : Fragment() {
 
         movieViewModel.movies.observe(viewLifecycleOwner) { movies ->
             movieAdapter.updateMovies(movies)
+            isLoading = false
         }
 
-        movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY)
+        movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY, currentPage)
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
+                    layoutManager?.let {
+                        val totalItemCount = it.itemCount
+                        val lastVisibleItemPosition = it.findLastVisibleItemPosition()
+
+                        if (!isLoading && totalItemCount <= (lastVisibleItemPosition + 1)) {
+                            isLoading = true
+                            currentPage++
+                            movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY, currentPage)
+                        }
+                    }
+                }
+            }
+        })
 
         return view
     }

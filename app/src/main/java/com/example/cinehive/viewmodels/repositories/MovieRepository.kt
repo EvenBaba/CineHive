@@ -8,10 +8,10 @@ import kotlinx.coroutines.withContext
 
 class MovieRepository(private val apiService: TMDBService) {
 
-    suspend fun fetchPopularMovies(apiKey: String): List<Movie> {
+    suspend fun fetchPopularMovies(apiKey: String, page: Int): List<Movie> {
         return withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getPopularMovies(apiKey)
+                val response = apiService.getPopularMovies(apiKey, page)
                 if (response.isSuccessful) {
                     response.body()?.results ?: emptyList()
                 } else {
