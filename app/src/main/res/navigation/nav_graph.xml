@@ -9,10 +9,23 @@
         android:id="@+id/homeFragment"
         android:name="com.example.cinehive.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_movieDetailFragment"
+            app:destination="@id/movieDetailFragment" />
+    </fragment>
     <fragment
         android:id="@+id/libraryFragment"
         android:name="com.example.cinehive.LibraryFragment"
         android:label="fragment_library"
         tools:layout="@layout/fragment_library" />
+
+    <fragment
+        android:id="@+id/movieDetailFragment"
+        android:name="com.example.cinehive.MovieDetailFragment"
+        android:label="fragment_movie_detail">
+        <argument
+            android:name="movie"
+            app:argType="com.example.cinehive.dataclasses.Movie" />
+    </fragment>
 </navigation>

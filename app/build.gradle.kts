@@ -100,5 +100,4 @@ dependencies {
 
     implementation(libs.material.v1100)
     implementation(libs.glide) // For image binding adapter.
-    kapt(libs.compiler)
 }

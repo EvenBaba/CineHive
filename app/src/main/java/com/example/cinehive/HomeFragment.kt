@@ -9,6 +9,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cinehive.adapters.HomeMovieAdapter
@@ -34,6 +36,8 @@ class HomeFragment : Fragment() {
     private val trendingRecyclerView get() = _trendingRecyclerView!!
     private val topRatedRecyclerView get() = _topRatedRecyclerView!!
 
+    private lateinit var navController: NavController
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,6 +51,8 @@ class HomeFragment : Fragment() {
         setupSearch()
         observeViewModelData()
         loadMovieData()
+
+        navController = findNavController()
     }
 
     override fun onDestroyView() {
@@ -72,7 +78,8 @@ class HomeFragment : Fragment() {
         searchAdapter = HomeMovieAdapter(
             mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
-            onWatchedClick = { movie -> handleWatchedClick(movie) }
+            onWatchedClick = { movie -> handleWatchedClick(movie) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         searchRecyclerView.adapter = searchAdapter
 
@@ -82,7 +89,8 @@ class HomeFragment : Fragment() {
         trendingAdapter = HomeMovieAdapter(
             mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
-            onWatchedClick = { movie -> handleWatchedClick(movie) }
+            onWatchedClick = { movie -> handleWatchedClick(movie) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         trendingRecyclerView.adapter = trendingAdapter
 
@@ -92,7 +100,8 @@ class HomeFragment : Fragment() {
         topRatedAdapter = HomeMovieAdapter(
             mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
-            onWatchedClick = { movie -> handleWatchedClick(movie) }
+            onWatchedClick = { movie -> handleWatchedClick(movie) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         topRatedRecyclerView.adapter = topRatedAdapter
     }
@@ -166,5 +175,10 @@ class HomeFragment : Fragment() {
                     isWatched = !existingMovie.isWatched)
             }
         }
+    }
+
+    private fun navigateToMovieDetail(movie: Movie) {
+        val action = HomeFragmentDirections.actionHomeFragmentToMovieDetailFragment(movie)
+        navController.navigate(action)
     }
 }

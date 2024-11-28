@@ -14,7 +14,8 @@ import com.example.cinehive.dataclasses.Movie
 class HomeMovieAdapter(
     private val movies: MutableList<Movie>,
     private val onFavoriteClick: (Movie) -> Unit,
-    private val onWatchedClick: (Movie) -> Unit
+    private val onWatchedClick: (Movie) -> Unit,
+    private val onMovieClick: (Movie) -> Unit
 ) : RecyclerView.Adapter<HomeMovieAdapter.MovieViewHolder>() {
 
     private val movieStates = mutableMapOf<Int, MovieEntity?>()
@@ -23,6 +24,12 @@ class HomeMovieAdapter(
         val moviePosterImageView: ImageView = itemView.findViewById(R.id.movie_poster)
         val favoriteButton: ImageButton = itemView.findViewById(R.id.favorite_button)
         val watchedButton: ImageButton = itemView.findViewById(R.id.watched_button)
+
+        init {
+            itemView.setOnClickListener {
+                onMovieClick(movies[adapterPosition])
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
