@@ -47,7 +47,7 @@
             android:text="Trending Now"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="4dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trending_movies_recycler_view"
@@ -65,8 +65,8 @@
             android:text="Top Rated"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/top_rated_movies_recycler_view"
@@ -84,8 +84,8 @@
             android:text="Popular"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popular_movies_recycler_view"
