@@ -76,8 +76,13 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun addToLibrary(movie: Movie, isFavorite: Boolean = false, isWatched: Boolean = false) = viewModelScope.launch {
-        libraryRepository.addToLibrary(movie, isFavorite, isWatched)
+    fun addToLibrary(
+        movie: Movie,
+        isFavorite: Boolean = false,
+        isWatched: Boolean = false,
+        rating: Int? = null
+    ) = viewModelScope.launch {
+        libraryRepository.addToLibrary(movie, isFavorite, isWatched, rating)
     }
 
     suspend fun isMovieInLibrary(movieId: Int): MovieEntity? {

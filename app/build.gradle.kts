@@ -98,6 +98,7 @@ dependencies {
     // optional - Paging 3 Integration
     implementation(libs.androidx.room.paging)
 
-    implementation(libs.material.v1100)
-    implementation(libs.glide) // For image binding adapter.
+    implementation(libs.material)
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
 }

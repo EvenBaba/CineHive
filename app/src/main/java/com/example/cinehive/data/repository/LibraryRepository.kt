@@ -10,13 +10,19 @@ class LibraryRepository(private val movieDao: MovieDao) {
     val watchedMovies = movieDao.getWatchedMovies()
     val ratedMovies = movieDao.getRatedMovies()
 
-    suspend fun addToLibrary(movie: Movie, isFavorite: Boolean = false, isWatched: Boolean = false) {
+    suspend fun addToLibrary(
+        movie: Movie,
+        isFavorite: Boolean = false,
+        isWatched: Boolean = false,
+        rating: Int? = null
+    ) {
         val movieEntity = MovieEntity(
             id = movie.id,
             title = movie.title,
             posterPath = movie.poster_path,
             isFavorite = isFavorite,
-            isWatched = isWatched
+            isWatched = isWatched,
+            rating = rating
         )
         movieDao.insertMovie(movieEntity)
     }
