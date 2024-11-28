@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CineHive</string>
+    <string name="rating_format">%.1f/10 (%s votes)</string>
 </resources>

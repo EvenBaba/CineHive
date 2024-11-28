@@ -83,13 +83,14 @@ class HomeFragment : Fragment() {
         _topRatedRecyclerView = view.findViewById(R.id.top_rated_movies_recycler_view)
         _popularRecyclerView = view.findViewById(R.id.popular_movies_recycler_view)
 
-        // Setup search results
-        searchRecyclerView.layoutManager = LinearLayoutManager(context)
+        // Setup search results with vertical layout
+        searchRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         searchAdapter = HomeMovieAdapter(
             mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
-            onMovieClick = { movie -> navigateToMovieDetail(movie) }
+            onMovieClick = { movie -> navigateToMovieDetail(movie) },
+            isHorizontal = false  // New parameter to indicate vertical layout
         )
         searchRecyclerView.adapter = searchAdapter
 
