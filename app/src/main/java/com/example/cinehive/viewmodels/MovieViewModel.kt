@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cinehive.api.RetrofitInstance
+import com.example.cinehive.api.responses.MovieResponse
 import com.example.cinehive.data.local.AppDatabase
 import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.data.repository.LibraryRepository
@@ -15,14 +16,14 @@ import kotlinx.coroutines.launch
 class MovieViewModel(application: Application) : AndroidViewModel(application) {
     private val libraryRepository: LibraryRepository
 
-    private val _popularMovies = MutableLiveData<List<Movie>>()
-    val popularMovies: LiveData<List<Movie>> = _popularMovies
+    private val _popularMovies = MutableLiveData<MovieResponse>()
+    val popularMovies: LiveData<MovieResponse> = _popularMovies
 
-    private val _trendingMovies = MutableLiveData<List<Movie>>()
-    val trendingMovies: LiveData<List<Movie>> = _trendingMovies
+    private val _trendingMovies = MutableLiveData<MovieResponse>()
+    val trendingMovies: LiveData<MovieResponse> = _trendingMovies
 
-    private val _topRatedMovies = MutableLiveData<List<Movie>>()
-    val topRatedMovies: LiveData<List<Movie>> = _topRatedMovies
+    private val _topRatedMovies = MutableLiveData<MovieResponse>()
+    val topRatedMovies: LiveData<MovieResponse> = _topRatedMovies
 
     private val _searchResults = MutableLiveData<List<Movie>>()
     val searchResults: LiveData<List<Movie>> = _searchResults
@@ -37,29 +38,29 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
             val response = RetrofitInstance.api.getPopularMovies(apiKey, page)
             if (response.isSuccessful) {
                 response.body()?.let { movieResponse ->
-                    _popularMovies.value = movieResponse.results
+                    _popularMovies.value = movieResponse
                 }
             }
         }
     }
 
-    fun getTrendingMovies(apiKey: String) {
+    fun getTrendingMovies(apiKey: String, page: Int = 1) {
         viewModelScope.launch {
-            val response = RetrofitInstance.api.getTrendingMovies(apiKey)
+            val response = RetrofitInstance.api.getTrendingMovies(apiKey, page)
             if (response.isSuccessful) {
                 response.body()?.let { movieResponse ->
-                    _trendingMovies.value = movieResponse.results
+                    _trendingMovies.value = movieResponse
                 }
             }
         }
     }
 
-    fun getTopRatedMovies(apiKey: String) {
+    fun getTopRatedMovies(apiKey: String, page: Int = 1) {
         viewModelScope.launch {
-            val response = RetrofitInstance.api.getTopRatedMovies(apiKey)
+            val response = RetrofitInstance.api.getTopRatedMovies(apiKey, page)
             if (response.isSuccessful) {
                 response.body()?.let { movieResponse ->
-                    _topRatedMovies.value = movieResponse.results
+                    _topRatedMovies.value = movieResponse
                 }
             }
         }

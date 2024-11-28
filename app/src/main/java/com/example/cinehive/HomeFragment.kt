@@ -38,6 +38,9 @@ class HomeFragment : Fragment() {
 
     private lateinit var navController: NavController
 
+    private var trendingPage = 1
+    private var topRatedPage = 1
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,6 +107,8 @@ class HomeFragment : Fragment() {
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         topRatedRecyclerView.adapter = topRatedAdapter
+
+        setupRecyclerViewScrollListeners()
     }
 
     private fun setupSearch() {
@@ -123,13 +128,13 @@ class HomeFragment : Fragment() {
 
     private fun observeViewModelData() {
         movieViewModel.trendingMovies.observe(viewLifecycleOwner) { movies ->
-            trendingAdapter?.updateMovies(movies)
-            updateLibraryStates(movies, trendingAdapter)
+            trendingAdapter?.updateMovies(movies.results)
+            updateLibraryStates(movies.results, trendingAdapter)
         }
 
         movieViewModel.topRatedMovies.observe(viewLifecycleOwner) { movies ->
-            topRatedAdapter?.updateMovies(movies)
-            updateLibraryStates(movies, topRatedAdapter)
+            topRatedAdapter?.updateMovies(movies.results)
+            updateLibraryStates(movies.results, topRatedAdapter)
         }
 
         movieViewModel.searchResults.observe(viewLifecycleOwner) { movies ->
@@ -146,11 +151,6 @@ class HomeFragment : Fragment() {
                 adapter.updateMovieState(movie.id, libraryState)
             }
         }
-    }
-
-    private fun loadMovieData() {
-        movieViewModel.getTrendingMovies(BuildConfig.TMDB_API_KEY)
-        movieViewModel.getTopRatedMovies(BuildConfig.TMDB_API_KEY)
     }
 
     private fun handleFavoriteClick(movie: Movie) {
@@ -180,5 +180,35 @@ class HomeFragment : Fragment() {
     private fun navigateToMovieDetail(movie: Movie) {
         val action = HomeFragmentDirections.actionHomeFragmentToMovieDetailFragment(movie)
         navController.navigate(action)
+    }
+
+    private fun setupRecyclerViewScrollListeners() {
+        trendingRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!recyclerView.canScrollHorizontally(1)) {
+                    if (trendingPage < movieViewModel.trendingMovies.value?.total_pages ?: 1) {
+                        trendingPage++
+                        movieViewModel.getTrendingMovies(BuildConfig.TMDB_API_KEY, trendingPage)
+                    }
+                }
+            }
+        })
+
+
+        topRatedRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!recyclerView.canScrollHorizontally(1)) {
+                    if (topRatedPage < movieViewModel.topRatedMovies.value?.total_pages ?: 1) {
+                        topRatedPage++
+                        movieViewModel.getTopRatedMovies(BuildConfig.TMDB_API_KEY, topRatedPage)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun loadMovieData() {
+        movieViewModel.getTrendingMovies(BuildConfig.TMDB_API_KEY, trendingPage)
+        movieViewModel.getTopRatedMovies(BuildConfig.TMDB_API_KEY, topRatedPage)
     }
 }

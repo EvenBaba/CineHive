@@ -103,9 +103,9 @@ class HomeMovieAdapter(
     override fun getItemCount(): Int = movies.size
 
     fun updateMovies(newMovies: List<Movie>) {
-        movies.clear()
+        val startIndex = movies.size
         movies.addAll(newMovies)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(startIndex, newMovies.size)
     }
 
     fun updateMovieState(movieId: Int, movieEntity: MovieEntity?) {
