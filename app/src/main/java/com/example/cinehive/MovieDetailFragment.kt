@@ -178,7 +178,7 @@ class MovieDetailFragment : Fragment() {
     }
 
     private fun updateButtonStates(movieState: MovieEntity) {
-        binding.favoriteButton.text = if (movieState.isFavorite) "Remove from Favorites" else "Add to Favorites"
+        binding.favoriteButton.text = if (movieState.isFavorite) "Remove Favorite" else "Add to Favorites"
         binding.favoriteButton.setIconResource(
             if (movieState.isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_border
         )
