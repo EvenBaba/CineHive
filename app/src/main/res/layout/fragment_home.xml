@@ -75,5 +75,23 @@
             android:paddingStart="4dp"
             android:paddingEnd="4dp"/>
 
+        <TextView
+            android:id="@+id/popular_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Popular"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/popular_movies_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"/>
+
     </LinearLayout>
 </ScrollView>

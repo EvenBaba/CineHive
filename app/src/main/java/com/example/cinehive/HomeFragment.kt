@@ -25,21 +25,25 @@ class HomeFragment : Fragment() {
     private var _searchRecyclerView: RecyclerView? = null
     private var _trendingRecyclerView: RecyclerView? = null
     private var _topRatedRecyclerView: RecyclerView? = null
+    private var _popularRecyclerView: RecyclerView? = null
 
     private var searchAdapter: HomeMovieAdapter? = null
     private var trendingAdapter: HomeMovieAdapter? = null
     private var topRatedAdapter: HomeMovieAdapter? = null
+    private var popularAdapter: HomeMovieAdapter? = null
 
     // Safe access to views
     private val searchEditText get() = _searchEditText!!
     private val searchRecyclerView get() = _searchRecyclerView!!
     private val trendingRecyclerView get() = _trendingRecyclerView!!
     private val topRatedRecyclerView get() = _topRatedRecyclerView!!
+    private val popularRecyclerView get() = _popularRecyclerView!!
 
     private lateinit var navController: NavController
 
     private var trendingPage = 1
     private var topRatedPage = 1
+    private var popularPage = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +69,11 @@ class HomeFragment : Fragment() {
         _searchRecyclerView = null
         _trendingRecyclerView = null
         _topRatedRecyclerView = null
+        _popularRecyclerView = null
         searchAdapter = null
         trendingAdapter = null
         topRatedAdapter = null
+        popularAdapter = null
     }
 
     private fun setupViews(view: View) {
@@ -75,6 +81,7 @@ class HomeFragment : Fragment() {
         _searchRecyclerView = view.findViewById(R.id.search_results_recycler_view)
         _trendingRecyclerView = view.findViewById(R.id.trending_movies_recycler_view)
         _topRatedRecyclerView = view.findViewById(R.id.top_rated_movies_recycler_view)
+        _popularRecyclerView = view.findViewById(R.id.popular_movies_recycler_view)
 
         // Setup search results
         searchRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -108,6 +115,17 @@ class HomeFragment : Fragment() {
         )
         topRatedRecyclerView.adapter = topRatedAdapter
 
+        // Setup popular movies
+        popularRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        popularAdapter = HomeMovieAdapter(
+            mutableListOf(),
+            onFavoriteClick = { movie -> handleFavoriteClick(movie) },
+            onWatchedClick = { movie -> handleWatchedClick(movie) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
+        )
+        popularRecyclerView.adapter = popularAdapter
+
         setupRecyclerViewScrollListeners()
     }
 
@@ -140,6 +158,11 @@ class HomeFragment : Fragment() {
         movieViewModel.searchResults.observe(viewLifecycleOwner) { movies ->
             searchAdapter?.updateMovies(movies)
             updateLibraryStates(movies, searchAdapter)
+        }
+
+        movieViewModel.popularMovies.observe(viewLifecycleOwner) { movies ->
+            popularAdapter?.updateMovies(movies.results)
+            updateLibraryStates(movies.results, popularAdapter)
         }
     }
 
@@ -205,10 +228,22 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+
+        popularRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!recyclerView.canScrollHorizontally(1)) {
+                    if (popularPage < movieViewModel.popularMovies.value?.total_pages ?: 1) {
+                        popularPage++
+                        movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY, popularPage)
+                    }
+                }
+            }
+        })
     }
 
     private fun loadMovieData() {
         movieViewModel.getTrendingMovies(BuildConfig.TMDB_API_KEY, trendingPage)
         movieViewModel.getTopRatedMovies(BuildConfig.TMDB_API_KEY, topRatedPage)
+        movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY, popularPage)
     }
 }
