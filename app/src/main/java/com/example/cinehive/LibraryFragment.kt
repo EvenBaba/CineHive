@@ -18,6 +18,9 @@ class LibraryFragment : Fragment() {
     private lateinit var adapter: LibraryMovieAdapter
     private lateinit var tabLayout: TabLayout
 
+    // Keep track of current tab to avoid resubscribing unnecessarily
+    private var currentTab = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,7 +37,9 @@ class LibraryFragment : Fragment() {
 
         setupRecyclerView()
         setupTabs()
-        observeData()
+
+        // Start observing the initial tab's data
+        observeCurrentTabData()
     }
 
     private fun setupRecyclerView() {
@@ -55,18 +60,10 @@ class LibraryFragment : Fragment() {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> viewModel.allMovies.observe(viewLifecycleOwner) { movies ->
-                        adapter.submitList(movies)
-                    }
-                    1 -> viewModel.favoriteMovies.observe(viewLifecycleOwner) { movies ->
-                        adapter.submitList(movies)
-                    }
-                    2 -> viewModel.watchedMovies.observe(viewLifecycleOwner) { movies ->
-                        adapter.submitList(movies)
-                    }
-                    3 -> viewModel.ratedMovies.observe(viewLifecycleOwner) { movies ->
-                        adapter.submitList(movies)
+                tab?.position?.let { position ->
+                    if (currentTab != position) {
+                        currentTab = position
+                        observeCurrentTabData()
                     }
                 }
             }
@@ -75,9 +72,36 @@ class LibraryFragment : Fragment() {
         })
     }
 
-    private fun observeData() {
-        viewModel.allMovies.observe(viewLifecycleOwner) { movies ->
-            adapter.submitList(movies)
+    private fun observeCurrentTabData() {
+        // Remove any existing observers
+        viewModel.allMovies.removeObservers(viewLifecycleOwner)
+        viewModel.favoriteMovies.removeObservers(viewLifecycleOwner)
+        viewModel.watchedMovies.removeObservers(viewLifecycleOwner)
+        viewModel.ratedMovies.removeObservers(viewLifecycleOwner)
+
+        // Observe the appropriate LiveData based on current tab
+        when (currentTab) {
+            0 -> viewModel.allMovies.observe(viewLifecycleOwner) { movies ->
+                adapter.submitList(movies)
+            }
+            1 -> viewModel.favoriteMovies.observe(viewLifecycleOwner) { movies ->
+                adapter.submitList(movies)
+            }
+            2 -> viewModel.watchedMovies.observe(viewLifecycleOwner) { movies ->
+                adapter.submitList(movies)
+            }
+            3 -> viewModel.ratedMovies.observe(viewLifecycleOwner) { movies ->
+                adapter.submitList(movies)
+            }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Remove observers when the view is destroyed
+        viewModel.allMovies.removeObservers(viewLifecycleOwner)
+        viewModel.favoriteMovies.removeObservers(viewLifecycleOwner)
+        viewModel.watchedMovies.removeObservers(viewLifecycleOwner)
+        viewModel.ratedMovies.removeObservers(viewLifecycleOwner)
     }
 }
