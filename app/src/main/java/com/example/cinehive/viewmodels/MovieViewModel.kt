@@ -14,8 +14,9 @@ import kotlinx.coroutines.launch
 
 class MovieViewModel(application: Application) : AndroidViewModel(application) {
     private val libraryRepository: LibraryRepository
-    private val _movies = MutableLiveData<List<Movie>>()
-    val movies: LiveData<List<Movie>> = _movies
+
+    private val _popularMovies = MutableLiveData<List<Movie>>()
+    val popularMovies: LiveData<List<Movie>> = _popularMovies
 
     private val _trendingMovies = MutableLiveData<List<Movie>>()
     val trendingMovies: LiveData<List<Movie>> = _trendingMovies
@@ -36,7 +37,7 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
             val response = RetrofitInstance.api.getPopularMovies(apiKey, page)
             if (response.isSuccessful) {
                 response.body()?.let { movieResponse ->
-                    _movies.value = movieResponse.results
+                    _popularMovies.value = movieResponse.results
                 }
             }
         }
