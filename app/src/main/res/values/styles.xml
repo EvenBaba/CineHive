@@ -1,0 +1,9 @@
+<resources>
+    <style name="BottomNavItemTextActive">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="BottomNavItemTextInactive">
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>
