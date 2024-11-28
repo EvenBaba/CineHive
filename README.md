@@ -1,2 +1,9 @@
 # CineHive
 CineHive is your ultimate movie discovery hub, where the world of film comes together.
+
+
+API Key
+`5549363d27271dc02d9b132b11bdc491`
+
+API Read Access Token
+`eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1NTQ5MzYzZDI3MjcxZGMwMmQ5YjEzMmIxMWJkYzQ5MSIsIm5iZiI6MTczMjc5MjQ0Ny44ODAzOTY4LCJzdWIiOiI2NzQ4NTAxYjhiYjg0YWI4MDhjZjkyOGQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.P_nMCe9otpAiII_j6rQSHIBI98WZUiQoXTclBjNUfrI`
