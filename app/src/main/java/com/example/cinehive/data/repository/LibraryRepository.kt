@@ -20,6 +20,11 @@ class LibraryRepository(private val movieDao: MovieDao) {
             id = movie.id,
             title = movie.title,
             posterPath = movie.poster_path,
+            backdropPath = movie.backdrop_path,
+            overview = movie.overview,
+            releaseDate = movie.release_date,
+            voteAverage = movie.vote_average,
+            voteCount = movie.vote_count,
             isFavorite = isFavorite,
             isWatched = isWatched,
             rating = rating

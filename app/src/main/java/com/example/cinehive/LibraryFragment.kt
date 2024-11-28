@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cinehive.adapters.LibraryMovieAdapter
+import com.example.cinehive.dataclasses.Movie
 import com.example.cinehive.viewmodels.LibraryViewModel
 import com.google.android.material.tabs.TabLayout
 
@@ -17,8 +19,6 @@ class LibraryFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LibraryMovieAdapter
     private lateinit var tabLayout: TabLayout
-
-    // Keep track of current tab to avoid resubscribing unnecessarily
     private var currentTab = 0
 
     override fun onCreateView(
@@ -37,8 +37,6 @@ class LibraryFragment : Fragment() {
 
         setupRecyclerView()
         setupTabs()
-
-        // Start observing the initial tab's data
         observeCurrentTabData()
     }
 
@@ -46,10 +44,16 @@ class LibraryFragment : Fragment() {
         adapter = LibraryMovieAdapter(
             onFavoriteClick = { movieId -> viewModel.toggleFavorite(movieId) },
             onWatchedClick = { movieId -> viewModel.toggleWatched(movieId) },
-            onRatingChanged = { movieId, rating -> viewModel.rateMovie(movieId, rating) }
+            onRatingChanged = { movieId, rating -> viewModel.rateMovie(movieId, rating) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun navigateToMovieDetail(movie: Movie) {
+        val action = LibraryFragmentDirections.actionLibraryFragmentToMovieDetailFragment(movie)
+        findNavController().navigate(action)
     }
 
     private fun setupTabs() {
@@ -98,7 +102,6 @@ class LibraryFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Remove observers when the view is destroyed
         viewModel.allMovies.removeObservers(viewLifecycleOwner)
         viewModel.favoriteMovies.removeObservers(viewLifecycleOwner)
         viewModel.watchedMovies.removeObservers(viewLifecycleOwner)

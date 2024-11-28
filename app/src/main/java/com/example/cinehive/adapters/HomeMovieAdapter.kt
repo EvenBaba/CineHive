@@ -27,7 +27,10 @@ class HomeMovieAdapter(
 
         init {
             itemView.setOnClickListener {
-                onMovieClick(movies[adapterPosition])
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onMovieClick(movies[position])
+                }
             }
         }
     }
@@ -40,6 +43,8 @@ class HomeMovieAdapter(
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = movies[position]
+
+        // Load movie poster
         holder.moviePosterImageView.load("https://image.tmdb.org/t/p/w500${movie.poster_path}")
 
         // Set favorite button state
@@ -59,16 +64,38 @@ class HomeMovieAdapter(
         holder.favoriteButton.setOnClickListener {
             onFavoriteClick(movie)
             // Toggle local state immediately for better UX
-            movieStates[movie.id] = movieStates[movie.id]?.copy(isFavorite = !(movieStates[movie.id]?.isFavorite ?: false))
-                ?: MovieEntity(movie.id, movie.title, movie.poster_path, isFavorite = true)
+            movieStates[movie.id] = movieStates[movie.id]?.copy(
+                isFavorite = !(movieStates[movie.id]?.isFavorite ?: false)
+            ) ?: MovieEntity(
+                id = movie.id,
+                title = movie.title,
+                posterPath = movie.poster_path,
+                backdropPath = movie.backdrop_path,
+                overview = movie.overview,
+                releaseDate = movie.release_date,
+                voteAverage = movie.vote_average,
+                voteCount = movie.vote_count,
+                isFavorite = true
+            )
             notifyItemChanged(position)
         }
 
         holder.watchedButton.setOnClickListener {
             onWatchedClick(movie)
             // Toggle local state immediately for better UX
-            movieStates[movie.id] = movieStates[movie.id]?.copy(isWatched = !(movieStates[movie.id]?.isWatched ?: false))
-                ?: MovieEntity(movie.id, movie.title, movie.poster_path, isWatched = true)
+            movieStates[movie.id] = movieStates[movie.id]?.copy(
+                isWatched = !(movieStates[movie.id]?.isWatched ?: false)
+            ) ?: MovieEntity(
+                id = movie.id,
+                title = movie.title,
+                posterPath = movie.poster_path,
+                backdropPath = movie.backdrop_path,
+                overview = movie.overview,
+                releaseDate = movie.release_date,
+                voteAverage = movie.vote_average,
+                voteCount = movie.vote_count,
+                isWatched = true
+            )
             notifyItemChanged(position)
         }
     }

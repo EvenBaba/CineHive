@@ -9,6 +9,11 @@ data class MovieEntity(
     val id: Int,
     val title: String,
     val posterPath: String,
+    val backdropPath: String,
+    val overview: String,
+    val releaseDate: String,
+    val voteAverage: Double,
+    val voteCount: Int,
     val isFavorite: Boolean = false,
     val isWatched: Boolean = false,
     val rating: Int? = null,  // Rating from 1-5, null if not rated
