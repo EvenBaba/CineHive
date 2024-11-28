@@ -42,4 +42,8 @@ class LibraryRepository(private val movieDao: MovieDao) {
     suspend fun removeFromLibrary(movieId: Int) {
         movieDao.deleteMovie(movieId)
     }
+
+    suspend fun getMovieById(movieId: Int): MovieEntity? {
+        return movieDao.getMovieById(movieId)
+    }
 }
