@@ -57,16 +57,31 @@ class MovieDetailFragment : Fragment() {
                 val existingMovie = movieViewModel.isMovieInLibrary(movie.id)
                 if (existingMovie == null) {
                     movieViewModel.addToLibrary(movie, isFavorite = true)
-                    binding.favoriteButton.text = "Remove from Favorites"
-                    binding.favoriteButton.setIconResource(R.drawable.ic_favorite_filled)
+                    updateButtonStates(MovieEntity(
+                        id = movie.id,
+                        title = movie.title,
+                        posterPath = movie.poster_path,
+                        backdropPath = movie.backdrop_path,
+                        overview = movie.overview,
+                        releaseDate = movie.release_date,
+                        voteAverage = movie.vote_average,
+                        voteCount = movie.vote_count,
+                        isFavorite = true
+                    ))
                 } else {
-                    movieViewModel.addToLibrary(
-                        movie,
-                        isFavorite = !existingMovie.isFavorite,
-                        isWatched = existingMovie.isWatched,
-                        rating = existingMovie.rating
-                    )
-                    updateButtonStates(existingMovie.copy(isFavorite = !existingMovie.isFavorite))
+                    if (!existingMovie.isWatched && existingMovie.rating == null) {
+                        movieViewModel.removeFromLibrary(movie.id)
+                        updateButtonStates(existingMovie.copy(isFavorite = false))
+                    } else {
+                        val updatedMovie = existingMovie.copy(isFavorite = !existingMovie.isFavorite)
+                        movieViewModel.addToLibrary(
+                            movie,
+                            isFavorite = !existingMovie.isFavorite,
+                            isWatched = existingMovie.isWatched,
+                            rating = existingMovie.rating
+                        )
+                        updateButtonStates(updatedMovie)
+                    }
                 }
             }
         }
@@ -76,16 +91,31 @@ class MovieDetailFragment : Fragment() {
                 val existingMovie = movieViewModel.isMovieInLibrary(movie.id)
                 if (existingMovie == null) {
                     movieViewModel.addToLibrary(movie, isWatched = true)
-                    binding.watchedButton.text = "Mark as Unwatched"
-                    binding.watchedButton.setIconResource(R.drawable.ic_watched)
+                    updateButtonStates(MovieEntity(
+                        id = movie.id,
+                        title = movie.title,
+                        posterPath = movie.poster_path,
+                        backdropPath = movie.backdrop_path,
+                        overview = movie.overview,
+                        releaseDate = movie.release_date,
+                        voteAverage = movie.vote_average,
+                        voteCount = movie.vote_count,
+                        isWatched = true
+                    ))
                 } else {
-                    movieViewModel.addToLibrary(
-                        movie,
-                        isFavorite = existingMovie.isFavorite,
-                        isWatched = !existingMovie.isWatched,
-                        rating = existingMovie.rating
-                    )
-                    updateButtonStates(existingMovie.copy(isWatched = !existingMovie.isWatched))
+                    if (!existingMovie.isFavorite && existingMovie.rating == null) {
+                        movieViewModel.removeFromLibrary(movie.id)
+                        updateButtonStates(existingMovie.copy(isWatched = false))
+                    } else {
+                        val updatedMovie = existingMovie.copy(isWatched = !existingMovie.isWatched)
+                        movieViewModel.addToLibrary(
+                            movie,
+                            isFavorite = existingMovie.isFavorite,
+                            isWatched = !existingMovie.isWatched,
+                            rating = existingMovie.rating
+                        )
+                        updateButtonStates(updatedMovie)
+                    }
                 }
             }
         }
@@ -109,6 +139,28 @@ class MovieDetailFragment : Fragment() {
                             rating = rating.toInt()
                         )
                     }
+                    updateRemoveRatingButtonVisibility(rating.toInt())
+                }
+            }
+        }
+
+        binding.removeRatingButton.setOnClickListener {
+            lifecycleScope.launch {
+                val existingMovie = movieViewModel.isMovieInLibrary(movie.id)
+                if (existingMovie != null) {
+                    if (!existingMovie.isFavorite && !existingMovie.isWatched) {
+                        movieViewModel.removeFromLibrary(movie.id)
+                        updateButtonStates(existingMovie.copy(rating = null))
+                    } else {
+                        movieViewModel.addToLibrary(
+                            movie,
+                            isFavorite = existingMovie.isFavorite,
+                            isWatched = existingMovie.isWatched,
+                            rating = null
+                        )
+                    }
+                    binding.userRating.rating = 0f
+                    updateRemoveRatingButtonVisibility(0)
                 }
             }
         }
@@ -120,6 +172,7 @@ class MovieDetailFragment : Fragment() {
             movieState?.let {
                 updateButtonStates(it)
                 binding.userRating.rating = it.rating?.toFloat() ?: 0f
+                updateRemoveRatingButtonVisibility(it.rating ?: 0)
             }
         }
     }
@@ -134,5 +187,9 @@ class MovieDetailFragment : Fragment() {
         binding.watchedButton.setIconResource(
             if (movieState.isWatched) R.drawable.ic_watched else R.drawable.ic_unwatched
         )
+    }
+
+    private fun updateRemoveRatingButtonVisibility(rating: Int) {
+        binding.removeRatingButton.visibility = if (rating > 0) View.VISIBLE else View.GONE
     }
 }

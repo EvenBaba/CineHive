@@ -86,6 +86,10 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
         libraryRepository.addToLibrary(movie, isFavorite, isWatched, rating)
     }
 
+    fun removeFromLibrary(movieId: Int) = viewModelScope.launch {
+        libraryRepository.removeFromLibrary(movieId)
+    }
+
     suspend fun isMovieInLibrary(movieId: Int): MovieEntity? {
         return libraryRepository.getMovieById(movieId)
     }

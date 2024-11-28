@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,7 @@ import com.example.cinehive.adapters.LibraryMovieAdapter
 import com.example.cinehive.dataclasses.Movie
 import com.example.cinehive.viewmodels.LibraryViewModel
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.launch
 
 class LibraryFragment : Fragment() {
     private val viewModel: LibraryViewModel by viewModels()
@@ -42,13 +44,43 @@ class LibraryFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = LibraryMovieAdapter(
-            onFavoriteClick = { movieId -> viewModel.toggleFavorite(movieId) },
-            onWatchedClick = { movieId -> viewModel.toggleWatched(movieId) },
+            onFavoriteClick = { movieId -> handleFavoriteClick(movieId) },
+            onWatchedClick = { movieId -> handleWatchedClick(movieId) },
             onRatingChanged = { movieId, rating -> viewModel.rateMovie(movieId, rating) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
         )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun handleFavoriteClick(movieId: Int) {
+        lifecycleScope.launch {
+            val movieEntity = viewModel.getMovieById(movieId)
+            movieEntity?.let { movie ->
+                if (!movie.isWatched && movie.rating == null) {
+                    // If no other attributes are set, remove the movie entirely
+                    viewModel.removeFromLibrary(movieId)
+                } else {
+                    // Otherwise just toggle the favorite status
+                    viewModel.toggleFavorite(movieId)
+                }
+            }
+        }
+    }
+
+    private fun handleWatchedClick(movieId: Int) {
+        lifecycleScope.launch {
+            val movieEntity = viewModel.getMovieById(movieId)
+            movieEntity?.let { movie ->
+                if (!movie.isFavorite && movie.rating == null) {
+                    // If no other attributes are set, remove the movie entirely
+                    viewModel.removeFromLibrary(movieId)
+                } else {
+                    // Otherwise just toggle the watched status
+                    viewModel.toggleWatched(movieId)
+                }
+            }
+        }
     }
 
     private fun navigateToMovieDetail(movie: Movie) {
@@ -98,13 +130,5 @@ class LibraryFragment : Fragment() {
                 adapter.submitList(movies)
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.allMovies.removeObservers(viewLifecycleOwner)
-        viewModel.favoriteMovies.removeObservers(viewLifecycleOwner)
-        viewModel.watchedMovies.removeObservers(viewLifecycleOwner)
-        viewModel.ratedMovies.removeObservers(viewLifecycleOwner)
     }
 }

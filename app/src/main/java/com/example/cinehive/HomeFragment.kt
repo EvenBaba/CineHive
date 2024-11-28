@@ -182,8 +182,17 @@ class HomeFragment : Fragment() {
             if (existingMovie == null) {
                 movieViewModel.addToLibrary(movie, isFavorite = true)
             } else {
-                movieViewModel.addToLibrary(movie, isFavorite = !existingMovie.isFavorite,
-                    isWatched = existingMovie.isWatched)
+                if (!existingMovie.isWatched && existingMovie.rating == null) {
+                    // If no other attributes are set, remove entirely
+                    movieViewModel.removeFromLibrary(movie.id)
+                } else {
+                    movieViewModel.addToLibrary(
+                        movie,
+                        isFavorite = !existingMovie.isFavorite,
+                        isWatched = existingMovie.isWatched,
+                        rating = existingMovie.rating
+                    )
+                }
             }
         }
     }
@@ -194,8 +203,17 @@ class HomeFragment : Fragment() {
             if (existingMovie == null) {
                 movieViewModel.addToLibrary(movie, isWatched = true)
             } else {
-                movieViewModel.addToLibrary(movie, isFavorite = existingMovie.isFavorite,
-                    isWatched = !existingMovie.isWatched)
+                if (!existingMovie.isFavorite && existingMovie.rating == null) {
+                    // If no other attributes are set, remove entirely
+                    movieViewModel.removeFromLibrary(movie.id)
+                } else {
+                    movieViewModel.addToLibrary(
+                        movie,
+                        isFavorite = existingMovie.isFavorite,
+                        isWatched = !existingMovie.isWatched,
+                        rating = existingMovie.rating
+                    )
+                }
             }
         }
     }

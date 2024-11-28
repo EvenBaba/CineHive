@@ -26,10 +26,6 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
         ratedMovies = repository.ratedMovies
     }
 
-    fun addToLibrary(movie: Movie, isFavorite: Boolean = false, isWatched: Boolean = false) = viewModelScope.launch {
-        repository.addToLibrary(movie, isFavorite, isWatched)
-    }
-
     fun toggleFavorite(movieId: Int) = viewModelScope.launch {
         repository.toggleFavorite(movieId)
     }
@@ -44,5 +40,9 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
 
     fun removeFromLibrary(movieId: Int) = viewModelScope.launch {
         repository.removeFromLibrary(movieId)
+    }
+
+    suspend fun getMovieById(movieId: Int): MovieEntity? {
+        return repository.getMovieById(movieId)
     }
 }
