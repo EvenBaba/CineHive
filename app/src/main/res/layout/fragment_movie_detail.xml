@@ -89,15 +89,6 @@
                     app:layout_constraintTop_toBottomOf="@id/movie_title"
                     tools:text="2024-01-01" />
 
-                <RatingBar
-                    android:id="@+id/user_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:numStars="5"
-                    android:stepSize="1"
-                    app:layout_constraintStart_toStartOf="@id/movie_title"
-                    app:layout_constraintTop_toBottomOf="@id/release_date" />
 
                 <TextView
                     android:id="@+id/tmdb_rating_label"
@@ -106,8 +97,8 @@
                     android:layout_marginTop="16dp"
                     android:text="TMDB Rating:"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@id/movie_title"
-                    app:layout_constraintTop_toBottomOf="@id/user_rating" />
+                    app:layout_constraintStart_toStartOf="@+id/release_date"
+                    app:layout_constraintTop_toBottomOf="@+id/release_date" />
 
                 <TextView
                     android:id="@+id/tmdb_rating"
@@ -161,6 +152,29 @@
                     app:layout_constraintStart_toEndOf="@id/favorite_button"
                     app:layout_constraintTop_toTopOf="@id/favorite_button" />
 
+
+
+                <TextView
+                    android:id="@+id/rate_the_film_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Rate the film"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/favorite_button" />
+
+                <RatingBar
+                    android:id="@+id/user_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintStart_toStartOf="@+id/rate_the_film_label"
+                    app:layout_constraintTop_toBottomOf="@+id/rate_the_film_label" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/remove_rating_button"
                     android:layout_width="wrap_content"
@@ -171,7 +185,7 @@
                     app:icon="@drawable/ic_close"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/watched_button" />
+                    app:layout_constraintTop_toBottomOf="@id/user_rating" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>
