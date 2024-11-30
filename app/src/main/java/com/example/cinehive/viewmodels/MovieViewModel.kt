@@ -28,6 +28,9 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
     private val _searchResults = MutableLiveData<List<Movie>>()
     val searchResults: LiveData<List<Movie>> = _searchResults
 
+    private val _similarMovies = MutableLiveData<MovieResponse>()
+    val similarMovies: LiveData<MovieResponse> = _similarMovies
+
     init {
         val movieDao = AppDatabase.getDatabase(application).movieDao()
         libraryRepository = LibraryRepository(movieDao)
@@ -66,6 +69,18 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
+    fun getSimilarMovies(apiKey: String, movieId: Int, page: Int = 1) {
+        viewModelScope.launch {
+            val response = RetrofitInstance.api.getSimilarMovies(movieId, apiKey, page = page)
+            if (response.isSuccessful) {
+                response.body()?.let { movieResponse ->
+                    _similarMovies.value = movieResponse
+                }
+            }
+        }
+    }
+
     fun searchMovies(apiKey: String, query: String) {
         viewModelScope.launch {
             val response = RetrofitInstance.api.searchMovies(apiKey, query)
@@ -76,6 +91,7 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
 
     fun addToLibrary(
         movie: Movie,
