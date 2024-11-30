@@ -16,6 +16,6 @@ data class MovieEntity(
     val voteCount: Int,
     val isFavorite: Boolean = false,
     val isWatched: Boolean = false,
-    val rating: Int? = null,  // Rating from 1-5, null if not rated
+    val rating: Int? = null,  // Rating from 1-10, null if not rated
     val addedDate: Long = System.currentTimeMillis()
 )

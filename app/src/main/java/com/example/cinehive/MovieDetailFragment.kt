@@ -129,17 +129,17 @@ class MovieDetailFragment : Fragment() {
                     if (existingMovie == null) {
                         movieViewModel.addToLibrary(
                             movie,
-                            rating = rating.toInt()
+                            rating = (2*rating).toInt()
                         )
                     } else {
                         movieViewModel.addToLibrary(
                             movie,
                             isFavorite = existingMovie.isFavorite,
                             isWatched = existingMovie.isWatched,
-                            rating = rating.toInt()
+                            rating = (2*rating).toInt()
                         )
                     }
-                    updateRemoveRatingButtonVisibility(rating.toInt())
+                    updateRemoveRatingButtonVisibility((2*rating).toInt())
                 }
             }
         }
