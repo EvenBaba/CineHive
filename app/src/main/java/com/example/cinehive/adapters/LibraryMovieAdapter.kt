@@ -27,7 +27,8 @@ class LibraryMovieAdapter(
         val titleTextView: TextView = view.findViewById(R.id.movie_title)
         val favoriteButton: ImageButton = view.findViewById(R.id.favorite_button)
         val watchedButton: ImageButton = view.findViewById(R.id.watched_button)
-        val ratingBar: RatingBar = view.findViewById(R.id.rating_bar)
+        //val ratingBar: RatingBar = view.findViewById(R.id.rating_bar)
+        val rate: TextView = view.findViewById(R.id.ratenum)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -55,7 +56,8 @@ class LibraryMovieAdapter(
         )
 
         // Set rating
-        holder.ratingBar.rating = movieEntity.rating?.toFloat() ?: 0f
+        //holder.ratingBar.rating = movieEntity.rating?.toFloat() ?: 0f
+        holder.rate.text = "${movieEntity.rating ?: 0}/10"
 
         // Click listeners
         holder.favoriteButton.setOnClickListener {
@@ -66,11 +68,11 @@ class LibraryMovieAdapter(
             onWatchedClick(movieEntity.id)
         }
 
-        holder.ratingBar.setOnRatingBarChangeListener { _, rating, fromUser ->
-            if (fromUser) {
-                onRatingChanged(movieEntity.id, rating.toInt())
-            }
-        }
+//        holder.ratingBar.setOnRatingBarChangeListener { _, rating, fromUser ->
+//            if (fromUser) {
+//                onRatingChanged(movieEntity.id, rating.toInt())
+//            }
+//        }
 
         // Add click listener for the entire item
         holder.itemView.setOnClickListener {
