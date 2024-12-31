@@ -57,4 +57,8 @@ class LibraryRepository(private val movieDao: MovieDao) {
     suspend fun getMovieById(movieId: Int): MovieEntity? {
         return movieDao.getMovieById(movieId)
     }
+
+    suspend fun getFavoriteMoviesDirect(): List<MovieEntity> {
+        return movieDao.getFavoriteMoviesDirect()
+    }
 }

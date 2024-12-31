@@ -12,6 +12,7 @@ import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.data.repository.LibraryRepository
 import com.example.cinehive.dataclasses.Movie
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MovieViewModel(application: Application) : AndroidViewModel(application) {
     private val libraryRepository: LibraryRepository
@@ -105,6 +106,7 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
     fun removeFromLibrary(movieId: Int) = viewModelScope.launch {
         libraryRepository.removeFromLibrary(movieId)
     }
+
 
     suspend fun isMovieInLibrary(movieId: Int): MovieEntity? {
         return libraryRepository.getMovieById(movieId)

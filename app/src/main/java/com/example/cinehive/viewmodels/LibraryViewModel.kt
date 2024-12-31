@@ -42,6 +42,13 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
         repository.removeFromLibrary(movieId)
     }
 
+    fun getFavoriteMoviesDirect(callback: (List<MovieEntity>) -> Unit) {
+        viewModelScope.launch {
+            val movies = repository.getFavoriteMoviesDirect()
+            callback(movies)
+        }
+    }
+
     suspend fun getMovieById(movieId: Int): MovieEntity? {
         return repository.getMovieById(movieId)
     }
