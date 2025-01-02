@@ -1,5 +1,6 @@
 package com.example.cinehive
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,11 @@ import kotlinx.coroutines.launch
 import com.google.gson.Gson
 import java.io.File
 import android.content.Intent
+import android.net.Uri
 import androidx.core.content.FileProvider
+import com.example.cinehive.data.local.MovieEntity
+import com.example.cinehive.data.local.toMovie
+import com.google.gson.reflect.TypeToken
 import kotlin.math.exp
 
 class LibraryFragment : Fragment() {
@@ -29,6 +34,7 @@ class LibraryFragment : Fragment() {
     private lateinit var adapter: LibraryMovieAdapter
     private lateinit var tabLayout: TabLayout
     private lateinit var exportButton: Button
+    private lateinit var importbutton: Button
     private var currentTab = 0
 
     override fun onCreateView(
@@ -45,14 +51,83 @@ class LibraryFragment : Fragment() {
         recyclerView = view.findViewById(R.id.library_recycler_view)
         tabLayout = view.findViewById(R.id.tab_layout)
         exportButton = view.findViewById(R.id.export_button)
+        importbutton = view.findViewById(R.id.import_button)
 
         exportButton.setOnClickListener{
             exportFavoritesToJson()
         }
 
+        importbutton.setOnClickListener {
+            openFilePicker()
+        }
+
         setupRecyclerView()
         setupTabs()
         observeCurrentTabData()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == FILE_PICKER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                importJsonFromFile(uri)
+            }
+        }
+    }
+
+    private fun importJsonFromFile(uri: Uri) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val inputStream = requireContext().contentResolver.openInputStream(uri)
+                val jsonString = inputStream?.bufferedReader().use { it?.readText() }
+
+                if (!jsonString.isNullOrEmpty()) {
+                    val movies = parseJsonToMovies(jsonString)
+                    saveMoviesToDatabase(movies)
+                    Toast.makeText(context, "Import successful!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Failed to read file", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error importing file: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun parseJsonToMovies(jsonString: String): List<MovieEntity> {
+        val gson = Gson()
+        val listType = object : TypeToken<List<Map<String, Any?>>>() {}.type
+        val movieList = gson.fromJson<List<Map<String, Any?>>>(jsonString, listType)
+
+        return movieList.mapNotNull { movieMap ->
+            val movieId = (movieMap["id"] as? Double)?.toInt() ?: 0  // JSON'daki id'yi al
+            if (movieId > 0) {  // ID 0 ise eklemiyoruz
+                MovieEntity(
+                    id = movieId,
+                    title = movieMap["title"] as String,
+                    releaseDate = movieMap["releaseDate"] as String,
+                    voteAverage = (movieMap["rating"] as? Double) ?: 0.0,
+                    overview = movieMap["overview"] as String,
+                    isFavorite = true,
+                    isWatched = false,
+                    posterPath = movieMap["posterPath"] as? String ?: "",
+                    backdropPath = movieMap["backdropPath"] as? String ?: "",
+                    voteCount = (movieMap["voteCount"] as? Double)?.toInt() ?: 0,
+                    rating = (movieMap["ratingScore"] as? Double)?.toInt(),
+                    addedDate = (movieMap["addedDate"] as? Double)?.toLong() ?: System.currentTimeMillis()
+                )
+            } else {
+                null  // ID yoksa ekleme
+            }
+        }
+    }
+
+    private suspend fun saveMoviesToDatabase(movies: List<MovieEntity>) {
+        for (movie in movies) {
+            val existingMovie = viewModel.getMovieById(movie.id)  // ID'ye göre kontrol
+            viewModel.addMovieFavorite(movie.toMovie())
+        }
     }
 
     private fun setupRecyclerView() {
@@ -179,11 +254,16 @@ class LibraryFragment : Fragment() {
 
                 for (movie in movies) {
                     val movieData = mapOf(
+                        "id" to movie.id,  // Film ID'sini ekliyoruz
                         "title" to movie.title,
                         "releaseDate" to movie.releaseDate,
                         "rating" to movie.voteAverage,
                         "overview" to movie.overview,
-                        "isWatched" to movie.isWatched
+                        "posterPath" to movie.posterPath,
+                        "backdropPath" to movie.backdropPath,
+                        "voteCount" to movie.voteCount,
+                        "ratingScore" to movie.rating,
+                        "addedDate" to movie.addedDate
                     )
                     jsonArray.add(movieData)
                 }
@@ -194,6 +274,19 @@ class LibraryFragment : Fragment() {
                 Toast.makeText(context, "No favorite movies to export!", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+        }
+        startActivityForResult(intent, FILE_PICKER_REQUEST_CODE)
+    }
+
+    companion object {
+        private const val FILE_PICKER_REQUEST_CODE = 123
     }
 
 }

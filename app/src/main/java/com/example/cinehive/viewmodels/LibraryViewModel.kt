@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cinehive.data.local.AppDatabase
+import com.example.cinehive.data.local.MovieDao
 import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.data.repository.LibraryRepository
 import com.example.cinehive.dataclasses.Movie
@@ -40,6 +41,10 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
 
     fun removeFromLibrary(movieId: Int) = viewModelScope.launch {
         repository.removeFromLibrary(movieId)
+    }
+
+    fun addMovieFavorite(movie: Movie) = viewModelScope.launch {
+        repository.addToLibrary(movie, isFavorite = true)
     }
 
     fun getFavoriteMoviesDirect(callback: (List<MovieEntity>) -> Unit) {
