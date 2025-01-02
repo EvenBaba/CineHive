@@ -26,11 +26,13 @@ class HomeFragment : Fragment() {
     private var _trendingRecyclerView: RecyclerView? = null
     private var _topRatedRecyclerView: RecyclerView? = null
     private var _popularRecyclerView: RecyclerView? = null
+    private var _upcomingRecyclerView: RecyclerView? = null
 
     private var searchAdapter: HomeMovieAdapter? = null
     private var trendingAdapter: HomeMovieAdapter? = null
     private var topRatedAdapter: HomeMovieAdapter? = null
     private var popularAdapter: HomeMovieAdapter? = null
+    private var upcomingAdapter: HomeMovieAdapter? = null
 
     // Safe access to views
     private val searchEditText get() = _searchEditText!!
@@ -38,12 +40,15 @@ class HomeFragment : Fragment() {
     private val trendingRecyclerView get() = _trendingRecyclerView!!
     private val topRatedRecyclerView get() = _topRatedRecyclerView!!
     private val popularRecyclerView get() = _popularRecyclerView!!
+    private val upcomingRecyclerView get() = _upcomingRecyclerView!!
 
     private lateinit var navController: NavController
 
     private var trendingPage = 1
     private var topRatedPage = 1
     private var popularPage = 1
+    private var upcomingPage = 1
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,10 +75,13 @@ class HomeFragment : Fragment() {
         _trendingRecyclerView = null
         _topRatedRecyclerView = null
         _popularRecyclerView = null
+        _upcomingRecyclerView = null
         searchAdapter = null
         trendingAdapter = null
         topRatedAdapter = null
         popularAdapter = null
+        upcomingAdapter = null
+
     }
 
     private fun setupViews(view: View) {
@@ -82,9 +90,11 @@ class HomeFragment : Fragment() {
         _trendingRecyclerView = view.findViewById(R.id.trending_movies_recycler_view)
         _topRatedRecyclerView = view.findViewById(R.id.top_rated_movies_recycler_view)
         _popularRecyclerView = view.findViewById(R.id.popular_movies_recycler_view)
+        _upcomingRecyclerView = view.findViewById(R.id.upcoming_movies_recycler_view)
 
         // Setup search results with vertical layout
-        searchRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        searchRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         searchAdapter = HomeMovieAdapter(
             mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
@@ -127,8 +137,20 @@ class HomeFragment : Fragment() {
         )
         popularRecyclerView.adapter = popularAdapter
 
+        // Setup upcoming movies
+        upcomingRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        upcomingAdapter = HomeMovieAdapter(
+            mutableListOf(),
+            onFavoriteClick = { movie -> handleFavoriteClick(movie) },
+            onWatchedClick = { movie -> handleWatchedClick(movie) },
+            onMovieClick = { movie -> navigateToMovieDetail(movie) }
+        )
+        upcomingRecyclerView.adapter = upcomingAdapter
+
         setupRecyclerViewScrollListeners()
     }
+
 
     private fun setupSearch() {
         searchEditText.setOnEditorActionListener { v, actionId, _ ->
@@ -164,6 +186,11 @@ class HomeFragment : Fragment() {
         movieViewModel.popularMovies.observe(viewLifecycleOwner) { movies ->
             popularAdapter?.updateMovies(movies.results)
             updateLibraryStates(movies.results, popularAdapter)
+        }
+
+        movieViewModel.upcomingMovies.observe(viewLifecycleOwner) { movies ->
+            upcomingAdapter?.updateMovies(movies.results)
+            updateLibraryStates(movies.results, upcomingAdapter)
         }
     }
 
@@ -258,11 +285,24 @@ class HomeFragment : Fragment() {
                 }
             }
         })
+
+        upcomingRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (!recyclerView.canScrollHorizontally(1)) {
+                    if (upcomingPage < movieViewModel.upcomingMovies.value?.total_pages ?: 1) {
+                        upcomingPage++
+                        movieViewModel.getUpcomingMovies(BuildConfig.TMDB_API_KEY, upcomingPage)
+                    }
+                }
+            }
+        })
+
     }
 
     private fun loadMovieData() {
         movieViewModel.getTrendingMovies(BuildConfig.TMDB_API_KEY, trendingPage)
         movieViewModel.getTopRatedMovies(BuildConfig.TMDB_API_KEY, topRatedPage)
         movieViewModel.getPopularMovies(BuildConfig.TMDB_API_KEY, popularPage)
+        movieViewModel.getUpcomingMovies(BuildConfig.TMDB_API_KEY, upcomingPage)
     }
 }

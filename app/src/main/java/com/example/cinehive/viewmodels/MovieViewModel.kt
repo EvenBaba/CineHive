@@ -32,6 +32,10 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
     private val _similarMovies = MutableLiveData<MovieResponse>()
     val similarMovies: LiveData<MovieResponse> = _similarMovies
 
+    private val _upcomingMovies = MutableLiveData<MovieResponse>()
+    val upcomingMovies: LiveData<MovieResponse> = _upcomingMovies
+
+
     init {
         val movieDao = AppDatabase.getDatabase(application).movieDao()
         libraryRepository = LibraryRepository(movieDao)
@@ -93,6 +97,16 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun getUpcomingMovies(apiKey: String, page: Int = 1) {
+        viewModelScope.launch {
+            val response = RetrofitInstance.api.getUpcomingMovies(apiKey, page)
+            if (response.isSuccessful) {
+                response.body()?.let { movieResponse ->
+                    _upcomingMovies.value = movieResponse
+                }
+            }
+        }
+    }
 
     fun addToLibrary(
         movie: Movie,

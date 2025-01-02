@@ -14,12 +14,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:endIconMode="clear_text"
-            app:startIconDrawable="@drawable/ic_search"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:startIconDrawable="@drawable/ic_search">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/search_edit_text"
@@ -35,19 +35,19 @@
             android:id="@+id/search_results_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:clipToPadding="false"
             android:paddingStart="4dp"
-            android:paddingEnd="4dp"/>
+            android:paddingEnd="4dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/trending_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:text="Trending Now"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trending_movies_recycler_view"
@@ -56,17 +56,17 @@
             android:clipToPadding="false"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:scrollbars="horizontal"/>
+            android:scrollbars="horizontal" />
 
         <TextView
             android:id="@+id/top_rated_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
             android:text="Top Rated"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"/>
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/top_rated_movies_recycler_view"
@@ -75,17 +75,17 @@
             android:clipToPadding="false"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:scrollbars="horizontal"/>
+            android:scrollbars="horizontal" />
 
         <TextView
             android:id="@+id/popular_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
             android:text="Popular"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"/>
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popular_movies_recycler_view"
@@ -94,7 +94,31 @@
             android:clipToPadding="false"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:scrollbars="horizontal"/>
+            android:scrollbars="horizontal" />
+
+        <TextView
+            android:id="@+id/upcoming_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="Upcoming"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/upcoming_movies_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:clipToPadding="false"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:scrollbars="horizontal" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
 
     </LinearLayout>
 </ScrollView>
