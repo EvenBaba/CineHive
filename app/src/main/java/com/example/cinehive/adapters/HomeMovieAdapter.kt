@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.cinehive.R
@@ -13,12 +15,11 @@ import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.dataclasses.Movie
 
 class HomeMovieAdapter(
-    private val movies: MutableList<Movie>,
     private val onFavoriteClick: (Movie) -> Unit,
     private val onWatchedClick: (Movie) -> Unit,
     private val onMovieClick: (Movie) -> Unit,
     private val isHorizontal: Boolean = true
-) : RecyclerView.Adapter<HomeMovieAdapter.MovieViewHolder>() {
+) : ListAdapter<Movie, HomeMovieAdapter.MovieViewHolder>(MovieDiffCallback()) {
 
     private val movieStates = mutableMapOf<Int, MovieEntity?>()
 
@@ -37,9 +38,19 @@ class HomeMovieAdapter(
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onMovieClick(movies[position])
+                    onMovieClick(getItem(position))
                 }
             }
+        }
+    }
+
+    class MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
+        override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+            return oldItem == newItem
         }
     }
 
@@ -55,7 +66,7 @@ class HomeMovieAdapter(
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        val movie = movies[position]
+        val movie = getItem(position)
         val context = holder.itemView.context
 
         // Load movie poster
@@ -131,22 +142,12 @@ class HomeMovieAdapter(
         }
     }
 
-    override fun getItemCount(): Int = movies.size
-
-    fun updateMovies(newMovies: List<Movie>) {
-        val startPosition = movies.size
-        movies.clear()
-        movies.addAll(newMovies)
-        if (startPosition == 0) {
-            notifyDataSetChanged()
-        } else {
-            notifyItemRangeInserted(startPosition, newMovies.size)
-        }
-    }
-
     fun updateMovieState(movieId: Int, movieEntity: MovieEntity?) {
         movieStates[movieId] = movieEntity
-        notifyItemChanged(movies.indexOfFirst { it.id == movieId })
+        val position = currentList.indexOfFirst { it.id == movieId }
+        if (position != -1) {
+            notifyItemChanged(position)
+        }
     }
 
     private fun formatVoteCount(count: Int): String {

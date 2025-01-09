@@ -96,7 +96,6 @@ class HomeFragment : Fragment() {
         searchRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         searchAdapter = HomeMovieAdapter(
-            mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) },
@@ -108,7 +107,6 @@ class HomeFragment : Fragment() {
         trendingRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         trendingAdapter = HomeMovieAdapter(
-            mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
@@ -119,7 +117,6 @@ class HomeFragment : Fragment() {
         topRatedRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         topRatedAdapter = HomeMovieAdapter(
-            mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
@@ -130,7 +127,6 @@ class HomeFragment : Fragment() {
         popularRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         popularAdapter = HomeMovieAdapter(
-            mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
@@ -141,7 +137,6 @@ class HomeFragment : Fragment() {
         upcomingRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         upcomingAdapter = HomeMovieAdapter(
-            mutableListOf(),
             onFavoriteClick = { movie -> handleFavoriteClick(movie) },
             onWatchedClick = { movie -> handleWatchedClick(movie) },
             onMovieClick = { movie -> navigateToMovieDetail(movie) }
@@ -169,27 +164,27 @@ class HomeFragment : Fragment() {
 
     private fun observeViewModelData() {
         movieViewModel.trendingMovies.observe(viewLifecycleOwner) { movies ->
-            trendingAdapter?.updateMovies(movies.results)
+            trendingAdapter?.submitList(movies.results)
             updateLibraryStates(movies.results, trendingAdapter)
         }
 
         movieViewModel.topRatedMovies.observe(viewLifecycleOwner) { movies ->
-            topRatedAdapter?.updateMovies(movies.results)
+            topRatedAdapter?.submitList(movies.results)
             updateLibraryStates(movies.results, topRatedAdapter)
         }
 
         movieViewModel.searchResults.observe(viewLifecycleOwner) { movies ->
-            searchAdapter?.updateMovies(movies)
+            searchAdapter?.submitList(movies)
             updateLibraryStates(movies, searchAdapter)
         }
 
         movieViewModel.popularMovies.observe(viewLifecycleOwner) { movies ->
-            popularAdapter?.updateMovies(movies.results)
+            popularAdapter?.submitList(movies.results)
             updateLibraryStates(movies.results, popularAdapter)
         }
 
         movieViewModel.upcomingMovies.observe(viewLifecycleOwner) { movies ->
-            upcomingAdapter?.updateMovies(movies.results)
+            upcomingAdapter?.submitList(movies.results)
             updateLibraryStates(movies.results, upcomingAdapter)
         }
     }
