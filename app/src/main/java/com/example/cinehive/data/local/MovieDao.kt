@@ -18,8 +18,7 @@ interface MovieDao {
     fun getRatedMovies(): LiveData<List<MovieEntity>>
 
     @Query("SELECT * FROM movies ORDER BY addedDate DESC")
-    suspend fun getMoviesDirect(): List<MovieEntity>
-
+    suspend fun getMoviesDirect(): List<MovieEntity> // Used while exporting database
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovie(movie: MovieEntity)

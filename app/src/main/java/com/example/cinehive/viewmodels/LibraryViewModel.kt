@@ -42,13 +42,9 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
         repository.removeFromLibrary(movieId)
     }
 
-    fun addMovieFavorite(movie: Movie) = viewModelScope.launch {
-        repository.addToLibrary(movie, isFavorite = true)
-    }
-
     fun addMovieRating(movie: Movie, isFav: Boolean, isWat: Boolean, rating: Int) = viewModelScope.launch {
         repository.addToLibrary(movie, isFavorite = isFav, isWatched = isWat, rating = rating)
-    }
+    }// If ratings not null, rating is also added
 
     fun addMovie(movie: Movie, isFav: Boolean, isWat: Boolean) = viewModelScope.launch {
         repository.addToLibrary(movie, isFavorite = isFav, isWatched = isWat)

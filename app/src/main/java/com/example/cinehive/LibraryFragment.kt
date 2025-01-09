@@ -53,7 +53,7 @@ class LibraryFragment : Fragment() {
         importbutton = view.findViewById(R.id.import_button)
 
         exportButton.setOnClickListener{
-            exportFavoritesToJson()
+            exportMoviesToJson()
         }
 
         importbutton.setOnClickListener {
@@ -94,7 +94,7 @@ class LibraryFragment : Fragment() {
         }
     }
 
-    private fun parseJsonToMovies(jsonString: String): List<MovieEntity> {
+    private fun parseJsonToMovies(jsonString: String): List<MovieEntity> { // Reading from json to import
         val gson = Gson()
         val listType = object : TypeToken<List<Map<String, Any?>>>() {}.type
         val movieList = gson.fromJson<List<Map<String, Any?>>>(jsonString, listType)
@@ -250,7 +250,7 @@ class LibraryFragment : Fragment() {
         startActivity(Intent.createChooser(shareIntent, "Share JSON File"))
     }
 
-    private fun exportFavoritesToJson() {
+    private fun exportMoviesToJson() { // Exporting database as a json format
         viewModel.getMoviesDirect { movies ->
             if (movies.isNotEmpty()) {
                 val jsonArray = mutableListOf<Map<String, Any?>>()
@@ -282,7 +282,7 @@ class LibraryFragment : Fragment() {
     }
 
 
-    private fun openFilePicker() {
+    private fun openFilePicker() { // Intent used to fick json for import
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "application/json"
