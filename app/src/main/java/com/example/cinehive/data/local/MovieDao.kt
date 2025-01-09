@@ -17,8 +17,8 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE rating IS NOT NULL ORDER BY rating DESC")
     fun getRatedMovies(): LiveData<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies WHERE isFavorite = 1 ORDER BY addedDate DESC")
-    suspend fun getFavoriteMoviesDirect(): List<MovieEntity>
+    @Query("SELECT * FROM movies ORDER BY addedDate DESC")
+    suspend fun getMoviesDirect(): List<MovieEntity>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

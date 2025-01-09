@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.cinehive.data.local.AppDatabase
-import com.example.cinehive.data.local.MovieDao
 import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.data.repository.LibraryRepository
 import com.example.cinehive.dataclasses.Movie
@@ -47,9 +46,17 @@ class LibraryViewModel(application: Application) : AndroidViewModel(application)
         repository.addToLibrary(movie, isFavorite = true)
     }
 
-    fun getFavoriteMoviesDirect(callback: (List<MovieEntity>) -> Unit) {
+    fun addMovieRating(movie: Movie, isFav: Boolean, isWat: Boolean, rating: Int) = viewModelScope.launch {
+        repository.addToLibrary(movie, isFavorite = isFav, isWatched = isWat, rating = rating)
+    }
+
+    fun addMovie(movie: Movie, isFav: Boolean, isWat: Boolean) = viewModelScope.launch {
+        repository.addToLibrary(movie, isFavorite = isFav, isWatched = isWat)
+    }
+
+    fun getMoviesDirect(callback: (List<MovieEntity>) -> Unit) {
         viewModelScope.launch {
-            val movies = repository.getFavoriteMoviesDirect()
+            val movies = repository.getMoviesDirect()
             callback(movies)
         }
     }

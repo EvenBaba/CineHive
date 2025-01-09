@@ -26,7 +26,6 @@ import androidx.core.content.FileProvider
 import com.example.cinehive.data.local.MovieEntity
 import com.example.cinehive.data.local.toMovie
 import com.google.gson.reflect.TypeToken
-import kotlin.math.exp
 
 class LibraryFragment : Fragment() {
     private val viewModel: LibraryViewModel by viewModels()
@@ -101,16 +100,16 @@ class LibraryFragment : Fragment() {
         val movieList = gson.fromJson<List<Map<String, Any?>>>(jsonString, listType)
 
         return movieList.mapNotNull { movieMap ->
-            val movieId = (movieMap["id"] as? Double)?.toInt() ?: 0  // JSON'daki id'yi al
-            if (movieId > 0) {  // ID 0 ise eklemiyoruz
+            val movieId = (movieMap["id"] as? Double)?.toInt() ?: 0
+            if (movieId > 0) {
                 MovieEntity(
                     id = movieId,
                     title = movieMap["title"] as String,
                     releaseDate = movieMap["releaseDate"] as String,
                     voteAverage = (movieMap["rating"] as? Double) ?: 0.0,
                     overview = movieMap["overview"] as String,
-                    isFavorite = true,
-                    isWatched = false,
+                    isFavorite = movieMap["isFavorite"] as? Boolean ?: false,
+                    isWatched = movieMap["isWatched"] as? Boolean ?: false,
                     posterPath = movieMap["posterPath"] as? String ?: "",
                     backdropPath = movieMap["backdropPath"] as? String ?: "",
                     voteCount = (movieMap["voteCount"] as? Double)?.toInt() ?: 0,
@@ -118,15 +117,19 @@ class LibraryFragment : Fragment() {
                     addedDate = (movieMap["addedDate"] as? Double)?.toLong() ?: System.currentTimeMillis()
                 )
             } else {
-                null  // ID yoksa ekleme
+                null
             }
         }
     }
 
     private suspend fun saveMoviesToDatabase(movies: List<MovieEntity>) {
         for (movie in movies) {
-            val existingMovie = viewModel.getMovieById(movie.id)  // ID'ye göre kontrol
-            viewModel.addMovieFavorite(movie.toMovie())
+            val existingMovie = viewModel.getMovieById(movie.id)
+            if(movie.rating != null){
+                viewModel.addMovieRating(movie.toMovie(), movie.isFavorite, movie.isWatched, movie.rating)
+            }else{
+                viewModel.addMovie(movie.toMovie(), movie.isFavorite, movie.isWatched)
+            }
         }
     }
 
@@ -248,13 +251,13 @@ class LibraryFragment : Fragment() {
     }
 
     private fun exportFavoritesToJson() {
-        viewModel.getFavoriteMoviesDirect { movies ->
+        viewModel.getMoviesDirect { movies ->
             if (movies.isNotEmpty()) {
                 val jsonArray = mutableListOf<Map<String, Any?>>()
 
                 for (movie in movies) {
                     val movieData = mapOf(
-                        "id" to movie.id,  // Film ID'sini ekliyoruz
+                        "id" to movie.id,
                         "title" to movie.title,
                         "releaseDate" to movie.releaseDate,
                         "rating" to movie.voteAverage,
@@ -263,7 +266,9 @@ class LibraryFragment : Fragment() {
                         "backdropPath" to movie.backdropPath,
                         "voteCount" to movie.voteCount,
                         "ratingScore" to movie.rating,
-                        "addedDate" to movie.addedDate
+                        "addedDate" to movie.addedDate,
+                        "isWatched" to movie.isWatched,
+                        "isFavorite" to movie.isFavorite
                     )
                     jsonArray.add(movieData)
                 }
@@ -271,7 +276,7 @@ class LibraryFragment : Fragment() {
                 val jsonString = toJson(jsonArray)
                 saveJsonToFile(jsonString)
             } else {
-                Toast.makeText(context, "No favorite movies to export!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "No movies in the database to export!", Toast.LENGTH_SHORT).show()
             }
         }
     }
